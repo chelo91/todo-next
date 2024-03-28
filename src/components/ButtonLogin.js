@@ -6,7 +6,7 @@ function LoginForm() {
         event.preventDefault(); // Prevent the default form submission behavior
         // Here you can perform any additional actions before submitting the form
         // For example, you can make a request to your API
-        fetch('http://api.carpincho.dev/auth/github', {
+        fetch('https://api.carpincho.dev/auth/github', {
             method: 'POST',
             // You can add headers or body payload if needed
         })
