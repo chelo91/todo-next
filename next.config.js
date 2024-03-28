@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    async headers() {
+    /*async headers() {
         return [
             {
                 // matching all API routes
@@ -13,6 +13,11 @@ const nextConfig = {
                 ]
             }
         ]
+    },
+    crossOrigin: 'anonymous',*/
+    headers: {
+        'Access-Control-Allow-Origin': '*', // Specify allowed origins
+        // Other CORS headers as needed
     },
     reactStrictMode: false,
     crossOrigin: 'anonymous',
