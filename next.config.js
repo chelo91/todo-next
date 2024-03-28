@@ -14,13 +14,14 @@ const nextConfig = {
             }
         ]
     },
-    crossOrigin: 'anonymous',*/
+    crossOrigin: 'anonymous',
     headers: {
         'Access-Control-Allow-Origin': '*', // Specify allowed origins
         // Other CORS headers as needed
     },
-    reactStrictMode: false,
     crossOrigin: 'anonymous',
+    */
+    reactStrictMode: false,
 }
 
 module.exports = nextConfig
