@@ -15,6 +15,7 @@ const nextConfig = {
         ]
     },
     reactStrictMode: false,
+    crossOrigin: 'anonymous',
 }
 
 module.exports = nextConfig
