@@ -34,15 +34,15 @@ export default function ListTodo() {
 
             {tasks.map((task, index) => {
                 return (
-                    <Stack direction='row' key={task.id}>
+                    <Stack direction='row' key={task._id}>
                         <Checkbox
-                            defaultChecked={task.finish}
+                            defaultChecked={task.check}
                             onChange={() => handleCheckboxChange(index)}
                         />
                         <Input
                             variant='flushed'
                             placeholder='Tarea 1'
-                            value={task.title}
+                            value={task.text}
                             onChange={(event) => handleInputChange(index, event)}
                         />
                         <IconButton aria-label='Delete task' icon={<DeleteIcon />} onClick={() => handleDeleteClick(index)} />

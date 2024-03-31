@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 export function useTaskList() {
     const [tasks, setTasks] = useState([]);
 
-    useEffect(() => {
-        const tasksInStorage = localStorage.getItem('task-list');
+    useEffect(async () => {
+        /*const tasksInStorage = localStorage.getItem('task-list');
         if (tasksInStorage) {
             setTasks(JSON.parse(tasksInStorage));
         } else {
@@ -16,8 +16,16 @@ export function useTaskList() {
             ];
             setTasks(initialTasks);
             // También puedes guardar las tareas iniciales en el almacenamiento local aquí
-            localStorage.setItem('task-list', JSON.stringify(initialTasks));
-        }
+            localStorage.setItem('task-list', JSON.stringify(initialTasks));*/
+        //const response = await fetch('/api/lists');
+
+
+
+        await fetch('/api/lists')
+            .then(response => response.json())
+            .then(data => setTasks(data.payload[0].items))
+            .catch(error => console.error('Error fetching tasks:', error));
+
     }, []);
 
     const addTask = (newTask) => {
@@ -37,9 +45,9 @@ export function useTaskList() {
         setTasks(updatedTasks);
     };
 
-    useEffect(() => {
-        localStorage.setItem('task-list', JSON.stringify(tasks));
-    }, [tasks]);
+    /*useEffect(() => {
+         localStorage.setItem('task-list', JSON.stringify(tasks));
+     }, [tasks]);*/
 
     return { tasks, addTask, updateTask, deleteTask };
 }

@@ -1,13 +1,13 @@
 "use client";
 import { Link, Box, Flex, Text, Button, Stack } from "@chakra-ui/react";
-import { useState } from 'react';
+//import { useState } from 'react';
 import ButtonLogin from "./ButtonLogin";
 import Logo from "./Logo";
 
 const NavBar = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
+  //const [isOpen, setIsOpen] = useState(false);
 
-  const toggle = () => setIsOpen(!isOpen);
+  //const toggle = () => setIsOpen(!isOpen);
 
   return (
     <NavBarContainer {...props}>
@@ -18,7 +18,7 @@ const NavBar = (props) => {
     </NavBarContainer>
   );
 };
-
+/*
 const CloseIcon = () => (
   <svg width="24" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
     <title>Close</title>
@@ -74,7 +74,7 @@ const MenuLinks = ({ isOpen }) => {
       </Stack>
     </Box>
   );
-};
+};*/
 
 const NavBarContainer = ({ children, ...props }) => {
   return (

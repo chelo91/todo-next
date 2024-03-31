@@ -1,33 +1,35 @@
 import React from 'react';
 import { Button } from "@chakra-ui/react";
+import { useCookie } from '../hooks/useCookie.js';
+import { useToastNotification } from '../hooks/useToastNotification.js';
 
-function LoginForm() {
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
-        // Here you can perform any additional actions before submitting the form
-        // For example, you can make a request to your API
-        fetch('https://api.carpincho.dev/auth/github', {
-            method: 'POST',
-            // You can add headers or body payload if needed
-        })
-            .then((response) => {
-                console.log(response)
-                // Handle response if necessary
-            })
-            .catch((error) => {
-                console.log(error)
+function ButtonLogin({ }) {
+    const { cookieValue, deleteCookie } = useCookie('cookieTodoJWT');
+    const { addToast } = useToastNotification();
+    const urlApi = process.env.URL_API;
 
-                // Handle error if necessary
-            });
+    const handleLogout = () => {
+        // Muestra un toast para indicar que se cerró sesión
+        addToast({ title: 'Logout', msg: 'Has cerrado sesión', type: 'info' });
+        // Elimina la cookie
+        deleteCookie();
     };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <Button type="submit" colorScheme='blackAlpha'>
-                Iniciar sesión con Github
+    if (cookieValue) {
+        return (<>
+            <Button onClick={handleLogout}>
+                Cerrar sesión
             </Button>
-        </form>
-    );
+        </>
+        );
+    } else {
+        return (
+            <a href={`${urlApi}/auth/github`} >
+                <Button colorScheme='blackAlpha'>
+                    Iniciar sesión con Github
+                </Button>
+            </a >
+        );
+    }
 }
 
-export default LoginForm;
+export default ButtonLogin;
