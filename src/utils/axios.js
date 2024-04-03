@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { getCookieValue } from './cookie.js';
-
 const urlApi = process.env.URL_API;
 
 // Función genérica para realizar solicitudes GET
@@ -35,6 +33,7 @@ export const axiosPost = async (endPoint, cookie, postDataJson) => {
         // Realiza la solicitud POST con Axios y pasa las opciones y los datos
         const response = await axios.post(urlApi + endPoint, postDataJson, options);
         // Retorna los datos obtenidos de la API
+        console.log(response.data);
         return response.data;
     } catch (error) {
         // Maneja el error en caso de que ocurra
@@ -43,17 +42,19 @@ export const axiosPost = async (endPoint, cookie, postDataJson) => {
 }
 
 // Función genérica para realizar solicitudes PUT
-export const axiosPut = async (endPoint, cookie, data) => {
+export const axiosPut = async (endPoint, cookie, postDataJson) => {
     try {
         const options = {
             headers: {
+                'Content-Type': 'application/json',
                 Cookie: cookie,
             },
             withCredentials: true, // Habilita el envío de cookies
         };
         // Realiza la solicitud PUT con Axios y pasa las opciones y los datos
-        const response = await axios.put(urlApi + endPoint, data, options);
+        const response = await axios.put(urlApi + endPoint, postDataJson, options);
         // Retorna los datos obtenidos de la API
+        //console.log(response.data);
         return response.data;
     } catch (error) {
         // Maneja el error en caso de que ocurra
@@ -73,6 +74,7 @@ export const axiosDelete = async (endPoint, cookie) => {
         // Realiza la solicitud DELETE con Axios y pasa las opciones
         const response = await axios.delete(urlApi + endPoint, options);
         // Retorna los datos obtenidos de la API
+        console.log(response.data);
         return response.data;
     } catch (error) {
         // Maneja el error en caso de que ocurra

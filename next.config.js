@@ -21,6 +21,11 @@ const nextConfig = {
     },
     crossOrigin: 'anonymous',
     */
+    env: {
+        NEXT_PUBLIC_URL_API: process.env.URL_API,
+        NEXT_PUBLIC_COOKIE_NAME: process.env.COOKIE_NAME
+
+    },
     reactStrictMode: false,
 }
 

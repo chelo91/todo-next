@@ -4,13 +4,13 @@ import { Link, Box, Flex, Text, Button, Stack } from "@chakra-ui/react";
 import ButtonLogin from "./ButtonLogin";
 import Logo from "./Logo";
 
-const NavBar = (props) => {
+const NavBar = () => {
   //const [isOpen, setIsOpen] = useState(false);
 
   //const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <NavBarContainer {...props}>
+    <NavBarContainer>
       <Logo
         w="100px"
       />

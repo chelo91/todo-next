@@ -1,54 +1,65 @@
 'use client';
-import { Checkbox, Input, Stack, IconButton } from '@chakra-ui/react'
+import { Checkbox, Input, Stack, IconButton, Button } from '@chakra-ui/react'
 import { DeleteIcon, AddIcon } from '@chakra-ui/icons'
-import { useTaskList } from '../hooks/useTaskList.js';
+import { useListsItems } from '../hooks/useListsItems.js';
+import { useCookie } from '../hooks/useCookie.js';
 
 export default function ListTodo() {
-
-    const { tasks, addTask, updateTask, deleteTask } = useTaskList();
+    const cookies = useCookie();
+    const { getCookie } = useCookie();
+    const { items, addItem, updateItem, deleteItem, syncItems } = useListsItems();
 
     const handleInputChange = (index, event) => {
-        const updatedTasks = [...tasks];
-        updatedTasks[index].title = event.target.value;
-        updateTask(updatedTasks[index].id, updatedTasks[index]);
+        const updatedItem = items[index];
+        updatedItem.text = event.target.value;
+        updateItem(updatedItem);
     };
 
     const handleCheckboxChange = (index) => {
-        const updatedTasks = [...tasks];
-        updatedTasks[index].finish = !updatedTasks[index].finish;
-        updateTask(updatedTasks[index].id, updatedTasks[index]);
+        const updatedItem = items[index];
+        updatedItem.check = !updatedItem.check;
+        updateItem(index, updatedItem);
     };
 
     const handleDeleteClick = (index) => {
-        const deletedTasks = [...tasks];
-        deleteTask(deletedTasks[index].id);
+        const deletedItem = items[index];
+        deleteItem(deletedItem);
     };
 
     const handleAddClick = () => {
-        addTask({ id: tasks.length + 1, finish: false, title: '', description: '' });
+        addItem({ check: false, text: '' });
+    };
+
+    const handleSaveClick = async () => {
+        syncItems()
     };
 
     return (
         <Stack spacing={3}>
-            <IconButton aria-label='Delete task' icon={<AddIcon />} onClick={() => handleAddClick()} />
-
-            {tasks.map((task, index) => {
-                return (
-                    <Stack direction='row' key={task._id}>
-                        <Checkbox
-                            defaultChecked={task.check}
-                            onChange={() => handleCheckboxChange(index)}
-                        />
-                        <Input
-                            variant='flushed'
-                            placeholder='Tarea 1'
-                            value={task.text}
-                            onChange={(event) => handleInputChange(index, event)}
-                        />
-                        <IconButton aria-label='Delete task' icon={<DeleteIcon />} onClick={() => handleDeleteClick(index)} />
-                    </Stack>
-                );
-            })}
+            <Button onClick={async () => handleSaveClick()}>Save</Button>
+            <p>{getCookie()}</p>
+            <IconButton aria-label='Add item' icon={<AddIcon />} onClick={() => handleAddClick()} />
+            {
+                items.map((item, index) => {
+                    if (item.deleted !== true) {
+                        return (
+                            <Stack direction='row' key={index}>
+                                <Checkbox
+                                    defaultChecked={item.check}
+                                    onChange={() => handleCheckboxChange(index)}
+                                />
+                                <Input
+                                    variant='flushed'
+                                    placeholder='Tarea 1'
+                                    value={item.text}
+                                    onChange={(event) => handleInputChange(index, event)}
+                                />
+                                <IconButton aria-label='Delete task' icon={<DeleteIcon />} onClick={() => handleDeleteClick(index)} />
+                            </Stack>
+                        );
+                    }
+                })
+            }
         </Stack>
 
     )
