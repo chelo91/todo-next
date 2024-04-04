@@ -1,13 +1,10 @@
 'use client';
-import { Checkbox, Input, Stack, IconButton, Button } from '@chakra-ui/react'
+import { Checkbox, Input, Stack, IconButton, Button, Skeleton } from '@chakra-ui/react'
 import { DeleteIcon, AddIcon } from '@chakra-ui/icons'
-import { useListsItems } from '../hooks/useListsItems.js';
-import { useCookie } from '../hooks/useCookie.js';
+import { useListsItems } from '../hooks/useItems.js/index.js';
 
 export default function ListTodo() {
-    const cookies = useCookie();
-    const { getCookie } = useCookie();
-    const { items, addItem, updateItem, deleteItem, syncItems } = useListsItems();
+    const { items, addItem, updateItem, deleteItem, syncItems, loading, guestMode } = useListsItems();
 
     const handleInputChange = (index, event) => {
         const updatedItem = items[index];
@@ -33,14 +30,12 @@ export default function ListTodo() {
     const handleSaveClick = async () => {
         syncItems()
     };
-
-    return (
-        <Stack spacing={3}>
-            <Button onClick={async () => handleSaveClick()}>Save</Button>
-            <p>{getCookie()}</p>
-            <IconButton aria-label='Add item' icon={<AddIcon />} onClick={() => handleAddClick()} />
-            {
-                items.map((item, index) => {
+    if (!loading) {
+        return (
+            <Stack spacing={3}>
+                <Button isDisabled={guestMode} onClick={async () => handleSaveClick()}>Save</Button>
+                <IconButton aria-label='Add item' icon={<AddIcon />} onClick={() => handleAddClick()} />
+                {items.map((item, index) => {
                     if (item.deleted !== true) {
                         return (
                             <Stack direction='row' key={index}>
@@ -59,8 +54,25 @@ export default function ListTodo() {
                         );
                     }
                 })
-            }
-        </Stack>
-
-    )
+                }
+            </Stack>
+        )
+    } else {
+        return (
+            <Stack spacing={3}>
+                <Stack direction='row' >
+                    <Skeleton height="40px" width="100%" />
+                </Stack>
+                <Stack direction='row' >
+                    <Skeleton height="40px" width="100%" />
+                </Stack>
+                <Stack direction='row' >
+                    <Skeleton height="40px" width="100%" />
+                </Stack>
+                <Stack direction='row' >
+                    <Skeleton height="40px" width="100%" />
+                </Stack>
+            </Stack>
+        )
+    }
 }

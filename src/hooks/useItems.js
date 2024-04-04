@@ -1,51 +1,49 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { v4, stringify as uuidStringify } from 'uuid';
-
+import useFetch from './useFetch.js';
 // Definición del hook
 export function useListsItems() {
   const [lists, setLists] = useState([]);
   const [listSelected, setListSelected] = useState(null);
   const [items, setItems] = useState([]);
   const [guestMode, setGuestMode] = useState(false);
-  const didMount = useRef(false);
+  const { loading, error, value } = useFetch(
+    `/api/lists`,
+    {},
+    []
+  );
 
   useEffect(() => {
-    async function fetchLists() {
-      try {
-        const response = await fetch('/api/lists');
-        const data = await response.json();
-        const lists = data.payload;
-        setLists(lists);
-        setListSelected(lists[0]);
+    console.log("useEffect")
+    if (!loading) {
+      if (!error) {
+        console.log("value", value)
+        setLists(value.payload);
+        setListSelected(value.payload[0]);
         setGuestMode(false);
-      } catch (error) {
+      } else {
+        setLists([]);
+        setListSelected([]);
         setGuestMode(true);
       }
     }
-    fetchLists();
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     async function refreshItems() {
       console.log("refreshItems")
-      try {
-        if (!didMount.current) {
-          if (guestMode) {
-            const itemsInStorage = localStorage.getItem('lists-items');
-            if (itemsInStorage) {
-              setItems(JSON.parse(itemsInStorage));
-              console.log(items)
-            } else {
-              setItems([]);
-            }
+      if (!loading) {
+        if (guestMode) {
+          const itemsInStorage = localStorage.getItem('lists-items');
+          if (itemsInStorage) {
+            setItems(JSON.parse(itemsInStorage));
+            console.log(items)
           } else {
-            setItems(lists[0].items.map(item => ({ ...item, needsSync: false, deleted: false, created: false })));
+            setItems([]);
           }
         } else {
-          didMount.current = true;
+          setItems(lists[0].items.map(item => ({ ...item, needsSync: false, deleted: false, created: false })));
         }
-      } catch (error) {
-
       }
     }
     refreshItems();
@@ -134,6 +132,7 @@ export function useListsItems() {
     updateItem,
     deleteItem,
     syncItems,
-    setGuestMode
+    loading,
+    guestMode
   };
 }
