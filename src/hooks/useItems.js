@@ -1,129 +1,83 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState, } from 'react';
 import { v4, stringify as uuidStringify } from 'uuid';
-import useFetch from './useFetch.js';
 // Definición del hook
-export function useListsItems() {
-  const [lists, setLists] = useState([]);
-  const [listSelected, setListSelected] = useState(null);
+export function useItems(myListId, myItems) {
+  const [listId, setListId] = useState(null);
   const [items, setItems] = useState([]);
-  const [guestMode, setGuestMode] = useState(false);
-  const { loading, error, value } = useFetch(
-    `/api/lists`,
-    {},
-    []
-  );
 
   useEffect(() => {
-    console.log("useEffect")
-    if (!loading) {
-      if (!error) {
-        console.log("value", value)
-        setLists(value.payload);
-        setListSelected(value.payload[0]);
-        setGuestMode(false);
-      } else {
-        setLists([]);
-        setListSelected([]);
-        setGuestMode(true);
-      }
-    }
-  }, [loading]);
-
-  useEffect(() => {
-    async function refreshItems() {
-      console.log("refreshItems")
-      if (!loading) {
-        if (guestMode) {
-          const itemsInStorage = localStorage.getItem('lists-items');
-          if (itemsInStorage) {
-            setItems(JSON.parse(itemsInStorage));
-            console.log(items)
-          } else {
-            setItems([]);
-          }
-        } else {
-          setItems(lists[0].items.map(item => ({ ...item, needsSync: false, deleted: false, created: false })));
-        }
-      }
-    }
-    refreshItems();
-  }, [guestMode]);
-
-
-  const syncItems = async () => {
-    const updatedItems = items.filter((item) => item.needsSync);
-    const listId = uuidStringify(listSelected._id.data);
-
-    console.log('ListId:', listId);
-    if (updatedItems.length > 0) {
-      for (const item of updatedItems) {
-        try {
-          if (guestMode) {
-            localStorage.setItem('lists-items', JSON.stringify(listSelected));
-          } else {
-            let method = '';
-            let body = '';
-            let url = '/api/lists/' + listId + '/items';
-            if (item.created) {
-              method = 'POST';
-              body = item;
-            } else if (item.deleted) {
-              method = 'DELETE';
-              url = url + item._id;
-            } else {
-              method = 'PUT';
-              body = item;
-              url = url + item._id;
-            }
-
-            const response = await fetch(url, {
-              method: method,
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(body),
-            });
-            const data = await response.json();
-            console.log('Items sincronizados:', data);
-            setItems(items.map((item) => ({ ...item, needsSync: false, deleted: false, created: false })));
-          }
-        } catch (error) {
-          console.error('Error sincronizando items:', error);
-        }
-      }
-    }
-  };
+    setListId(myListId);
+    setItems(myItems);
+  })
 
   const addItem = (newItem) => {
-    newItem.needsSync = true;
-    newItem.created = true;
+    newItem.create = true;
     newItem._id = v4().toString();
-    const updatedItems = [...items, newItem];
-    setItems(updatedItems);
+    const newItems = [...items, newItem];
+    setItems(newItems);
   };
 
-  const updateItem = (updatedItem) => {
-    updatedItem.needsSync = true;
-    const updatedItems = items.map((item) =>
-      item._id === updatedItem._id ? { ...items, ...updatedItem } : item
+  const updateItem = (updateItem) => {
+    updateItem.update = true;
+    const newItems = items.map((item) =>
+      item._id === updateItem._id ? { ...items, ...updateItem } : item
     );
-    setItems(updatedItems);
+    setItems(newItems);
   };
 
   const deleteItem = (deletedItem) => {
-    const updatedItems = items.map(item => {
+    const newItems = items.map(item => {
       if (deletedItem._id === item._id) {
         return {
           ...item,
-          deleted: true,
-          needsync: true,
+          deleted: true
         };
       } else {
         return item;
       }
     });
-    setItems(updatedItems);
+    setItems(newItems);
   };
+
+  const syncItems = async () => {
+    for (const item of itemsToUpdate) {
+      await sendItemToApi(itemsToUpdate);
+    }
+    await refreshItems();
+  };
+
+  const sendItemToApi = async (item) => {
+    let method = '';
+    let body = '';
+    let url = '/api/lists/' + listId + '/items' + item._id;
+    if (item.created || item.update) {
+      method = 'PUT';
+      body = item;
+    } else if (item.deleted) {
+      method = 'DELETE';
+    }
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    console.log('Items sincronizados:', data);
+  }
+
+  const refreshItems = async () => {
+    let url = '/api/lists/' + listId
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    setItems(data.items);
+  }
 
   // Retorna el estado actual y las funciones para actualizarlo
   return {
@@ -131,8 +85,6 @@ export function useListsItems() {
     addItem,
     updateItem,
     deleteItem,
-    syncItems,
-    loading,
-    guestMode
+    syncItems
   };
 }

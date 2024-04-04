@@ -1,7 +1,7 @@
 'use client';
 import { Checkbox, Input, Stack, IconButton, Button, Skeleton } from '@chakra-ui/react'
 import { DeleteIcon, AddIcon } from '@chakra-ui/icons'
-import { useListsItems } from '../hooks/useItems.js/index.js';
+import { useListsItems } from '../hooks/useListsItems.js';
 
 export default function ListTodo() {
     const { items, addItem, updateItem, deleteItem, syncItems, loading, guestMode } = useListsItems();
