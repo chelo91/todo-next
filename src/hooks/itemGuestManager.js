@@ -3,6 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 export class ItemsGuestManager {
     constructor() {
         this.items = [];
+        this.loadChanges();
+    }
+
+    getItems = () => {
+        return this.items;
     }
 
     addItem = (newItem) => {
@@ -36,7 +41,10 @@ export class ItemsGuestManager {
     };
 
     loadChanges = () => {
+        console.log('Cargando items de localStorage');
         const itemsInStorage = localStorage.getItem('lists-items');
+        console.log(itemsInStorage);
+
         if (itemsInStorage) {
             this.items = JSON.parse(itemsInStorage);
         } else {

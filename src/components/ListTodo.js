@@ -15,7 +15,7 @@ export default function ListTodo() {
     const handleCheckboxChange = (index) => {
         const updatedItem = items[index];
         updatedItem.check = !updatedItem.check;
-        updateItem(index, updatedItem);
+        updateItem(updatedItem);
     };
 
     const handleDeleteClick = (index) => {
@@ -40,7 +40,7 @@ export default function ListTodo() {
                         return (
                             <Stack direction='row' key={index}>
                                 <Checkbox
-                                    defaultChecked={item.check}
+                                    isChecked={item.check}
                                     onChange={() => handleCheckboxChange(index)}
                                 />
                                 <Input
